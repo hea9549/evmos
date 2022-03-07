@@ -65,6 +65,8 @@ func (k Keeper) DeleteTokenPair(ctx sdk.Context, tokenPair types.TokenPair) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPair)
 	key := tokenPair.GetID()
 	store.Delete(key)
+	k.DeleteERC20Map(ctx, tokenPair.GetERC20Contract())
+	k.DeleteDenomMap(ctx, tokenPair.GetDenom())
 }
 
 // GetERC20Map returns the token pair id for the given address
@@ -95,6 +97,12 @@ func (k Keeper) DeleteERC20Map(ctx sdk.Context, erc20 common.Address) {
 func (k Keeper) SetDenomMap(ctx sdk.Context, denom string, id []byte) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByDenom)
 	store.Set([]byte(denom), id)
+}
+
+// DeleteDenomMap deletes the token pair id for the given address
+func (k Keeper) DeleteDenomMap(ctx sdk.Context, denom string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPairByDenom)
+	store.Delete([]byte(denom))
 }
 
 // IsTokenPairRegistered - check if registered token tokenPair is registered
